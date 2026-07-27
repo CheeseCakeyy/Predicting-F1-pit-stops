@@ -31,6 +31,10 @@ test("server-renders the PitWall overview shell", async () => {
   const html = await response.text();
   assert.match(html, /<title>PitWall AI<\/title>/i);
   assert.match(html, /Predict the next/);
+  assert.match(html, /Before the radio call/);
+  assert.match(html, /Try the model demo/);
+  assert.match(html, /From race state to pit-wall decision/);
+  assert.match(html, /Run a scenario/);
   assert.match(html, /439,140/);
   assert.match(html, /LightGBM \+ RealMLP/);
   assert.match(html, /0\.95328/);
