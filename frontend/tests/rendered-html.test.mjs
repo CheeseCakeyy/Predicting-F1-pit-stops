@@ -34,6 +34,8 @@ test("server-renders the PitWall overview shell", async () => {
   assert.match(html, /439,140/);
   assert.match(html, /LightGBM \+ RealMLP/);
   assert.match(html, /0\.95328/);
+  assert.match(html, /PIT: accelerate tyre rotation/);
+  assert.match(html, /Click to accelerate/);
   assert.match(html, /href="\/eda"/);
   assert.match(html, /href="\/model-lab"/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/);
@@ -79,7 +81,7 @@ test("server-renders the EDA and model lab routes", async () => {
 });
 
 test("keeps product styling and metadata free of starter references", async () => {
-  const [layout, styles, packageJson, modelLab, appShell, telemetry] = await Promise.all([
+  const [layout, styles, packageJson, modelLab, appShell, telemetry, spinningTyre] = await Promise.all([
     readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
     readFile(new URL("../package.json", import.meta.url), "utf8"),
@@ -89,6 +91,7 @@ test("keeps product styling and metadata free of starter references", async () =
     ),
     readFile(new URL("../app/components/app-shell.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/eda/eda-telemetry.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/components/spinning-tyre.tsx", import.meta.url), "utf8"),
   ]);
 
   assert.match(layout, /PitWall AI/);
@@ -112,6 +115,11 @@ test("keeps product styling and metadata free of starter references", async () =
   assert.match(modelLab, /calculateIllustrativePrediction/);
   assert.match(modelLab, /2023 triggers the dataset anomaly warning/);
   assert.match(modelLab, /not the trained model API/);
+  assert.match(modelLab, /setTyreBoost\(\(value\) => value \+ 1\)/);
+  assert.match(spinningTyre, /setTimeout\(\(\) => setBoosting\(false\), 1500\)/);
+  assert.match(spinningTyre, /spinning-tyre__rotor/);
+  assert.match(styles, /@keyframes tyre-idle-spin/);
+  assert.match(styles, /animation-duration:\s*0\.38s/);
   assert.doesNotMatch(layout, /codex-preview|Starter Project|_sites-preview/);
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
 });

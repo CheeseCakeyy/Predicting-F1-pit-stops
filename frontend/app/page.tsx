@@ -1,3 +1,5 @@
+import { SpinningTyre } from "./components/spinning-tyre";
+
 export default function Home() {
   return (
     <main className="page page--overview">
@@ -21,10 +23,8 @@ export default function Home() {
             and race-context data.
           </p>
         </div>
-        <div className="tyre-visual" aria-hidden="true">
-          <div className="tyre-visual__ring">
-            <div className="tyre-visual__hub">PIT</div>
-          </div>
+        <div className="tyre-visual">
+          <SpinningTyre label="PIT" variant="overview" />
           <span className="tyre-visual__label">BOX · BOX · BOX</span>
         </div>
       </section>

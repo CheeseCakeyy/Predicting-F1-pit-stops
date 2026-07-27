@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { SpinningTyre } from "./spinning-tyre";
 
 type LapState = {
   driver: string;
@@ -142,6 +143,7 @@ export function InteractiveModelLab() {
   const [activePreset, setActivePreset] = useState("pitWindow");
   const [draft, setDraft] = useState<LapState>(presets.pitWindow);
   const [submitted, setSubmitted] = useState<LapState>(presets.pitWindow);
+  const [tyreBoost, setTyreBoost] = useState(0);
   const result = useMemo(
     () => calculateIllustrativePrediction(submitted),
     [submitted],
@@ -208,6 +210,7 @@ export function InteractiveModelLab() {
           onSubmit={(event) => {
             event.preventDefault();
             setSubmitted(draft);
+            setTyreBoost((value) => value + 1);
           }}
         >
           <div className="panel-heading">
@@ -365,9 +368,11 @@ export function InteractiveModelLab() {
               <strong>{result.call}</strong>
             </div>
           </div>
-          <div className="result-tyre" aria-hidden="true">
-            <span>{result.probability >= 50 ? "PIT" : "OUT"}</span>
-          </div>
+          <SpinningTyre
+            label={result.probability >= 50 ? "PIT" : "OUT"}
+            variant="result"
+            boostKey={tyreBoost}
+          />
         </article>
       </section>
 
