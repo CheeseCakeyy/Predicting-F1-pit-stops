@@ -53,25 +53,41 @@ test("server-renders the EDA and model lab routes", async () => {
     modelResponse.text(),
   ]);
 
-  assert.match(eda, /Exploratory Data Analysis/);
-  assert.match(eda, /What makes a lap look pit-bound/);
-  assert.match(eda, /2023 anomaly/);
+  assert.match(eda, /DETAILED EXPLORATORY DATA ANALYSIS/);
+  assert.match(eda, /Lap-by-lap, from raw data to a baseline/);
+  assert.match(eda, /CATEGORICAL ANALYSIS/);
+  assert.match(eda, /Chinese Grand Prix/);
+  assert.match(eda, /NOTEBOOK CONCLUSION/);
+  assert.match(eda, /\/eda\/02-numeric-distributions\.png/);
+  assert.match(eda, /\/eda\/06-pit-timing\.png/);
+  assert.match(eda, /\/eda\/10-feature-importance\.png/);
+  assert.match(eda, /0\.89754/);
   assert.match(model, /Best Model Demo/);
   assert.match(model, /Ask the pit wall/);
-  assert.match(model, /Demo Status|DEMO STATUS/);
+  assert.match(model, /Frontend simulation/);
+  assert.match(model, /Common pit window/);
+  assert.match(model, /Run illustrative prediction/);
+  assert.match(model, /WHY THIS RESULT/);
 });
 
 test("keeps product styling and metadata free of starter references", async () => {
-  const [layout, styles, packageJson] = await Promise.all([
+  const [layout, styles, packageJson, modelLab] = await Promise.all([
     readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
     readFile(new URL("../package.json", import.meta.url), "utf8"),
+    readFile(
+      new URL("../app/components/interactive-model-lab.tsx", import.meta.url),
+      "utf8",
+    ),
   ]);
 
   assert.match(layout, /PitWall AI/);
   assert.match(layout, /<AppShell>\{children\}<\/AppShell>/);
   assert.match(styles, /--navy:\s*#10213f/i);
   assert.match(styles, /@media \(max-width:\s*760px\)/);
+  assert.match(modelLab, /calculateIllustrativePrediction/);
+  assert.match(modelLab, /2023 triggers the dataset anomaly warning/);
+  assert.match(modelLab, /not the trained model API/);
   assert.doesNotMatch(layout, /codex-preview|Starter Project|_sites-preview/);
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
 });
