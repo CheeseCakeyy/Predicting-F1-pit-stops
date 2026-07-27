@@ -58,9 +58,11 @@ test("server-renders the EDA and model lab routes", async () => {
   assert.match(eda, /CATEGORICAL ANALYSIS/);
   assert.match(eda, /Chinese Grand Prix/);
   assert.match(eda, /NOTEBOOK CONCLUSION/);
-  assert.match(eda, /\/eda\/02-numeric-distributions\.png/);
-  assert.match(eda, /\/eda\/06-pit-timing\.png/);
-  assert.match(eda, /\/eda\/10-feature-importance\.png/);
+  assert.match(eda, /Train vs test statistical profiles/);
+  assert.match(eda, /Observed pit windows/);
+  assert.match(eda, /LightGBM feature importance/);
+  assert.match(eda, /Exact notebook data/);
+  assert.doesNotMatch(eda, /\/eda\/\d{2}-[^"]+\.png/);
   assert.match(eda, /0\.89754/);
   assert.match(model, /Best Model Demo/);
   assert.match(model, /Ask the pit wall/);

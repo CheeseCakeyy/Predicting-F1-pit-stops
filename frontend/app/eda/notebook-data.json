@@ -1,0 +1,112 @@
+{
+  "target": [
+    { "label": "Stay out", "class": 0, "count": 351759, "rate": 80.102 },
+    { "label": "Pit next lap", "class": 1, "count": 87381, "rate": 19.898 }
+  ],
+  "numericProfiles": [
+    { "feature": "TyreLife", "trainMean": 14.158231, "trainStd": 9.801338, "testMean": 14.160625, "testStd": 9.852778, "drift": 0.02 },
+    { "feature": "LapNumber", "trainMean": 23.105909, "trainStd": 16.958261, "testMean": 23.050185, "testStd": 17.002292, "drift": -0.24 },
+    { "feature": "Position", "trainMean": 9.630339, "trainStd": 5.27877, "testMean": 9.604539, "testStd": 5.273444, "drift": -0.27 },
+    { "feature": "LapTime (s)", "trainMean": 90.948735, "trainStd": 19.772769, "testMean": 90.986869, "testStd": 20.855248, "drift": 0.04 },
+    { "feature": "LapTime_Delta", "trainMean": -3.77004, "trainStd": 43.945759, "testMean": -3.577802, "testStd": 40.348466, "drift": 5.1 },
+    { "feature": "Cumulative_Degradation", "trainMean": -25.721759, "trainStd": 54.766573, "testMean": -25.849491, "testStd": 54.920269, "drift": -0.5 },
+    { "feature": "RaceProgress", "trainMean": 0.337661, "trainStd": 0.253277, "testMean": 0.336695, "testStd": 0.253396, "drift": -0.29 },
+    { "feature": "Position_Change", "trainMean": 0.101542, "trainStd": 4.006765, "testMean": 0.1068, "testStd": 4.020592, "drift": 5.18 },
+    { "feature": "Stint", "trainMean": 1.789113, "trainStd": 0.950194, "testMean": 1.784237, "testStd": 0.9488, "drift": -0.27 }
+  ],
+  "targetCorrelations": [
+    { "feature": "TyreLife", "value": 0.27351 },
+    { "feature": "LapNumber", "value": 0.267057 },
+    { "feature": "Stint", "value": 0.198193 },
+    { "feature": "RaceProgress", "value": 0.185477 },
+    { "feature": "Position_Change", "value": 0.04623 },
+    { "feature": "Position", "value": 0.021348 },
+    { "feature": "LapTime_Delta", "value": -0.004946 },
+    { "feature": "LapTime (s)", "value": -0.034096 },
+    { "feature": "Cumulative_Degradation", "value": -0.167401 }
+  ],
+  "relationshipHighlights": [
+    { "x": "LapNumber", "y": "RaceProgress", "value": 0.96 },
+    { "x": "TyreLife", "y": "LapNumber", "value": 0.65 },
+    { "x": "TyreLife", "y": "PitNextLap", "value": 0.27351 },
+    { "x": "LapNumber", "y": "PitNextLap", "value": 0.267057 },
+    { "x": "Cumulative_Degradation", "y": "PitNextLap", "value": -0.167401 },
+    { "x": "LapTime_Delta", "y": "PitNextLap", "value": -0.004946 }
+  ],
+  "compoundRates": [
+    { "label": "HARD", "value": 0.327537 },
+    { "label": "SOFT", "value": 0.193475 },
+    { "label": "INTERMEDIATE", "value": 0.152284 },
+    { "label": "MEDIUM", "value": 0.101131 },
+    { "label": "WET", "value": 0.025092 }
+  ],
+  "yearRates": [
+    { "label": "2024", "value": 0.295319 },
+    { "label": "2025", "value": 0.284389 },
+    { "label": "2022", "value": 0.266505 },
+    { "label": "2023", "value": 0.009607 }
+  ],
+  "pitWindows": [
+    { "label": "Race lap", "start": 5, "end": 55, "max": 78, "note": "broad activity" },
+    { "label": "Race progress", "start": 35, "end": 60, "max": 100, "note": "strongest phase" },
+    { "label": "Tyre age", "start": 10, "end": 20, "max": 50, "note": "highest concentration" },
+    { "label": "After 30 tyre laps", "start": 30, "end": 50, "max": 50, "note": "events become rare" }
+  ],
+  "degradation": [
+    { "bin": "0–5", "value": -7.406731 },
+    { "bin": "5–10", "value": -3.522863 },
+    { "bin": "10–15", "value": -2.925761 },
+    { "bin": "15–20", "value": -2.687828 },
+    { "bin": "20–25", "value": -2.580695 },
+    { "bin": "25–30", "value": -2.17585 },
+    { "bin": "30–35", "value": -1.55653 },
+    { "bin": "35–40", "value": -1.435711 },
+    { "bin": "40–45", "value": -1.655322 },
+    { "bin": "45–50", "value": -1.868573 }
+  ],
+  "drift": [
+    { "feature": "TyreLife", "value": 0.02 },
+    { "feature": "LapNumber", "value": -0.24 },
+    { "feature": "Position", "value": -0.27 },
+    { "feature": "LapTime (s)", "value": 0.04 },
+    { "feature": "LapTime_Delta", "value": 5.1 },
+    { "feature": "Cumulative_Degradation", "value": -0.5 },
+    { "feature": "RaceProgress", "value": -0.29 },
+    { "feature": "Position_Change", "value": 5.18 },
+    { "feature": "Stint", "value": -0.27 }
+  ],
+  "raceRates": [
+    { "label": "Chinese Grand Prix", "value": 0.388593, "count": 7311 },
+    { "label": "Monaco Grand Prix", "value": 0.357398, "count": 21539 },
+    { "label": "Spanish Grand Prix", "value": 0.319973, "count": 20483 },
+    { "label": "Bahrain Grand Prix", "value": 0.287535, "count": 19535 },
+    { "label": "Belgian Grand Prix", "value": 0.280382, "count": 9002 },
+    { "label": "Emilia Romagna Grand Prix", "value": 0.272557, "count": 15483 },
+    { "label": "French Grand Prix", "value": 0.257457, "count": 3185 },
+    { "label": "São Paulo Grand Prix", "value": 0.253718, "count": 11497 },
+    { "label": "Hungarian Grand Prix", "value": 0.239269, "count": 22481 },
+    { "label": "Saudi Arabian Grand Prix", "value": 0.227431, "count": 18111 },
+    { "label": "Qatar Grand Prix", "value": 0.175581, "count": 13817 },
+    { "label": "Canadian Grand Prix", "value": 0.153857, "count": 21416 },
+    { "label": "Abu Dhabi Grand Prix", "value": 0.150545, "count": 16427 },
+    { "label": "Pre-Season Testing", "value": 0.146541, "count": 22492 },
+    { "label": "Singapore Grand Prix", "value": 0.141772, "count": 18960 },
+    { "label": "British Grand Prix", "value": 0.133459, "count": 15383 },
+    { "label": "Italian Grand Prix", "value": 0.131963, "count": 19854 },
+    { "label": "United States Grand Prix", "value": 0.114048, "count": 18045 },
+    { "label": "Miami Grand Prix", "value": 0.103552, "count": 18860 },
+    { "label": "Mexico City Grand Prix", "value": 0.090656, "count": 23672 }
+  ],
+  "featureImportance": [
+    { "feature": "RaceProgress", "value": 801 },
+    { "feature": "Cumulative_Degradation", "value": 801 },
+    { "feature": "LapTime (s)", "value": 774 },
+    { "feature": "Race", "value": 766 },
+    { "feature": "LapTime_Delta", "value": 760 },
+    { "feature": "TyreLife", "value": 553 },
+    { "feature": "LapNumber", "value": 539 },
+    { "feature": "Driver", "value": 381 },
+    { "feature": "Stint", "value": 361 },
+    { "feature": "Position", "value": 348 }
+  ]
+}
