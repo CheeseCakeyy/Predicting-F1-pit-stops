@@ -63,6 +63,8 @@ test("server-renders the EDA and model lab routes", async () => {
   assert.match(eda, /LightGBM feature importance/);
   assert.match(eda, /Exact notebook data/);
   assert.match(eda, /LIVE ANALYSIS/);
+  assert.match(eda, /id="eda-overview"/);
+  assert.match(eda, /Go to Overview/);
   assert.match(eda, /Telemetry focus/);
   assert.match(eda, /SELECTED CIRCUIT/);
   assert.match(eda, /ACTIVE CHANNEL/);
@@ -77,7 +79,7 @@ test("server-renders the EDA and model lab routes", async () => {
 });
 
 test("keeps product styling and metadata free of starter references", async () => {
-  const [layout, styles, packageJson, modelLab] = await Promise.all([
+  const [layout, styles, packageJson, modelLab, appShell, telemetry] = await Promise.all([
     readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
     readFile(new URL("../package.json", import.meta.url), "utf8"),
@@ -85,12 +87,28 @@ test("keeps product styling and metadata free of starter references", async () =
       new URL("../app/components/interactive-model-lab.tsx", import.meta.url),
       "utf8",
     ),
+    readFile(new URL("../app/components/app-shell.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/eda/eda-telemetry.tsx", import.meta.url), "utf8"),
   ]);
 
   assert.match(layout, /PitWall AI/);
   assert.match(layout, /<AppShell>\{children\}<\/AppShell>/);
   assert.match(styles, /--navy:\s*#10213f/i);
   assert.match(styles, /@media \(max-width:\s*760px\)/);
+  assert.match(styles, /\.page-frame[\s\S]*?overflow:\s*clip/);
+  assert.match(appShell, /frameRef\.current\.scrollTop = 0/);
+  assert.match(appShell, /window\.scrollTo\(\{ top: 0, left: 0/);
+  assert.match(telemetry, /getBoundingClientRect\(\)\.top \+ window\.scrollY - 104/);
+  assert.doesNotMatch(telemetry, /scrollIntoView/);
+  assert.doesNotMatch(telemetry, /IntersectionObserver/);
+  assert.match(telemetry, /getCurrentSectionIndex/);
+  assert.match(telemetry, /requestAnimationFrame/);
+  assert.match(telemetry, /window\.innerHeight \* 0\.22/);
+  assert.match(telemetry, /behavior: "auto"/);
+  assert.doesNotMatch(telemetry, /behavior: reducedMotion \? "auto" : "smooth"/);
+  assert.match(telemetry, /String\(active\)\.padStart\(2, "0"\)/);
+  assert.match(telemetry, /String\(index\)\.padStart\(2, "0"\)/);
+  assert.match(telemetry, /sections\.length - 1/);
   assert.match(modelLab, /calculateIllustrativePrediction/);
   assert.match(modelLab, /2023 triggers the dataset anomaly warning/);
   assert.match(modelLab, /not the trained model API/);

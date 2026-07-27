@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useRef } from "react";
 import type { ReactNode } from "react";
 
 const navigation = [
@@ -12,6 +13,12 @@ const navigation = [
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const frameRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (frameRef.current) frameRef.current.scrollTop = 0;
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [pathname]);
 
   return (
     <div className="app-shell">
@@ -50,7 +57,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </aside>
 
-      <div className="page-frame">
+      <div className="page-frame" ref={frameRef}>
         <div className="track-line track-line--one" aria-hidden="true" />
         <div className="track-line track-line--two" aria-hidden="true" />
         {children}

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 const sections = [
+  ["eda-overview", "Overview"],
   ["target", "Target"],
   ["distributions", "Profiles"],
   ["feature-target", "Signals"],
@@ -20,24 +21,27 @@ export function EdaTelemetry() {
   const [focusMode, setFocusMode] = useState(false);
 
   useEffect(() => {
-    const nodes = sections
-      .map(([id]) => document.getElementById(id))
-      .filter((node): node is HTMLElement => Boolean(node));
+    let animationFrame = 0;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (!visible) return;
-        const index = sections.findIndex(([id]) => id === visible.target.id);
-        if (index >= 0) setActive(index);
-      },
-      { rootMargin: "-22% 0px -62% 0px", threshold: [0, 0.15, 0.4] },
-    );
+    const updateActiveSection = () => {
+      animationFrame = 0;
+      setActive(getCurrentSectionIndex());
+    };
 
-    nodes.forEach((node) => observer.observe(node));
-    return () => observer.disconnect();
+    const scheduleUpdate = () => {
+      if (animationFrame) return;
+      animationFrame = window.requestAnimationFrame(updateActiveSection);
+    };
+
+    updateActiveSection();
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate);
+
+    return () => {
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
+      if (animationFrame) window.cancelAnimationFrame(animationFrame);
+    };
   }, []);
 
   useEffect(() => {
@@ -46,18 +50,31 @@ export function EdaTelemetry() {
   }, [focusMode]);
 
   const progress = useMemo(
-    () => ((active + 1) / sections.length) * 100,
+    () => (active / (sections.length - 1)) * 100,
     [active],
   );
 
   const goTo = (index: number) => {
     const next = Math.max(0, Math.min(sections.length - 1, index));
-    const reducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    document.getElementById(sections[next][0])?.scrollIntoView({
-      behavior: reducedMotion ? "auto" : "smooth",
-      block: "start",
+    const pageFrame = document.querySelector<HTMLElement>(".page-frame");
+    if (pageFrame) pageFrame.scrollTop = 0;
+    setActive(next);
+
+    if (next === 0) {
+      window.scrollTo({
+        top: 0,
+        behavior: "auto",
+      });
+      return;
+    }
+
+    const target = document.getElementById(sections[next][0]);
+    if (!target) return;
+
+    const top = target.getBoundingClientRect().top + window.scrollY - 104;
+    window.scrollTo({
+      top: Math.max(0, top),
+      behavior: "auto",
     });
   };
 
@@ -69,7 +86,9 @@ export function EdaTelemetry() {
       </header>
 
       <div className="eda-telemetry__current" aria-live="polite">
-        <small>{String(active + 1).padStart(2, "0")} / 10</small>
+        <small>
+          {String(active).padStart(2, "0")} / {sections.length - 1}
+        </small>
         <strong>{sections[active][1]}</strong>
       </div>
 
@@ -87,7 +106,7 @@ export function EdaTelemetry() {
             aria-current={index === active ? "step" : undefined}
             key={id}
           >
-            <span>{String(index + 1).padStart(2, "0")}</span>
+            <span>{String(index).padStart(2, "0")}</span>
           </button>
         ))}
       </div>
@@ -95,7 +114,7 @@ export function EdaTelemetry() {
       <div className="eda-telemetry__actions">
         <button
           type="button"
-          onClick={() => goTo(active - 1)}
+          onClick={() => goTo(Math.min(active, getCurrentSectionIndex()) - 1)}
           disabled={active === 0}
           aria-label="Previous analysis section"
         >
@@ -103,7 +122,7 @@ export function EdaTelemetry() {
         </button>
         <button
           type="button"
-          onClick={() => goTo(active + 1)}
+          onClick={() => goTo(Math.max(active, getCurrentSectionIndex()) + 1)}
           disabled={active === sections.length - 1}
           aria-label="Next analysis section"
         >
@@ -122,4 +141,22 @@ export function EdaTelemetry() {
       </button>
     </aside>
   );
+}
+
+function getCurrentSectionIndex() {
+  const activationLine = Math.min(150, window.innerHeight * 0.22);
+  let current = 0;
+
+  for (let index = 0; index < sections.length; index += 1) {
+    const node = document.getElementById(sections[index][0]);
+    if (!node) continue;
+    if (node.getBoundingClientRect().top <= activationLine) current = index;
+    else break;
+  }
+
+  const atPageEnd =
+    window.innerHeight + window.scrollY >=
+    document.documentElement.scrollHeight - 4;
+
+  return atPageEnd ? sections.length - 1 : current;
 }

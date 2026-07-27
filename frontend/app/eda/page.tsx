@@ -64,7 +64,7 @@ export default function EdaPage() {
         <div className="topbar__meta">S6E5 · Lap-by-lap analysis</div>
       </header>
 
-      <section className="notebook-hero">
+      <section className="notebook-hero" id="eda-overview">
         <div>
           <p className="section-kicker">DETAILED EXPLORATORY DATA ANALYSIS</p>
           <h1>Lap-by-lap, from raw data to a baseline.</h1>

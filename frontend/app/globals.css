@@ -169,7 +169,7 @@ a {
 .page-frame {
   position: relative;
   min-width: 0;
-  overflow: hidden;
+  overflow: clip;
   isolation: isolate;
   background:
     radial-gradient(circle at 94% 8%, rgba(241, 90, 84, 0.18), transparent 22%),
@@ -1845,7 +1845,7 @@ a {
 
 .notebook-section {
   padding: clamp(78px, 10vw, 140px) 0 0;
-  scroll-margin-top: 86px;
+  scroll-margin-top: 112px;
 }
 
 .notebook-section__header {
