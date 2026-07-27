@@ -1,4 +1,7 @@
+"use client";
+
 import type { CSSProperties, ReactNode } from "react";
+import { useState } from "react";
 import data from "./notebook-data.json";
 
 type ChartStyle = CSSProperties & Record<`--${string}`, string | number>;
@@ -39,6 +42,11 @@ export function TargetDistributionChart() {
 }
 
 export function NumericProfileChart() {
+  const [selected, setSelected] = useState("TyreLife");
+  const active =
+    data.numericProfiles.find((item) => item.feature === selected) ??
+    data.numericProfiles[0];
+
   return (
     <ChartShell
       title="Train vs test statistical profiles"
@@ -49,6 +57,17 @@ export function NumericProfileChart() {
         <span><i className="is-train" />Train</span>
         <span><i className="is-test" />Test</span>
         <small>Dot = mean · band = ±1 standard deviation</small>
+      </div>
+      <div className="profile-focus" aria-live="polite">
+        <div>
+          <span>ACTIVE CHANNEL</span>
+          <strong>{active.feature}</strong>
+        </div>
+        <dl>
+          <div><dt>Train μ</dt><dd>{formatNumber(active.trainMean)}</dd></div>
+          <div><dt>Test μ</dt><dd>{formatNumber(active.testMean)}</dd></div>
+          <div><dt>Mean drift</dt><dd>{formatSigned(active.drift)}%</dd></div>
+        </dl>
       </div>
       <div className="profile-grid">
         {data.numericProfiles.map((item) => {
@@ -63,7 +82,13 @@ export function NumericProfileChart() {
           const range = high - low || 1;
           const position = (value: number) => ((value - low) / range) * 100;
           return (
-            <article className="profile-card" key={item.feature}>
+            <button
+              type="button"
+              className={`profile-card${selected === item.feature ? " is-selected" : ""}`}
+              onClick={() => setSelected(item.feature)}
+              aria-pressed={selected === item.feature}
+              key={item.feature}
+            >
               <header>
                 <strong>{item.feature}</strong>
                 <span className={Math.abs(item.drift) >= 5 ? "is-alert" : ""}>
@@ -92,7 +117,7 @@ export function NumericProfileChart() {
                 <span>{formatNumber(item.trainMean)} ± {formatNumber(item.trainStd)}</span>
                 <span>{formatNumber(item.testMean)} ± {formatNumber(item.testStd)}</span>
               </footer>
-            </article>
+            </button>
           );
         })}
       </div>
@@ -245,12 +270,26 @@ export function DriftChart() {
 }
 
 export function RaceRatesChart() {
+  const [selected, setSelected] = useState(data.raceRates[0].label);
+  const active =
+    data.raceRates.find((race) => race.label === selected) ?? data.raceRates[0];
+  const estimatedEvents = Math.round(active.value * active.count);
+
   return (
     <ChartShell
       title="Pit rate by race"
       caption="Exact top and bottom ten rows printed by notebook cell 35"
       wide
     >
+      <div className="race-selection" aria-live="polite">
+        <div>
+          <span>SELECTED CIRCUIT</span>
+          <strong>{active.label}</strong>
+        </div>
+        <div><small>Pit rate</small><b>{(active.value * 100).toFixed(1)}%</b></div>
+        <div><small>Observed laps</small><b>{active.count.toLocaleString("en-US")}</b></div>
+        <div><small>Approx. positives</small><b>{estimatedEvents.toLocaleString("en-US")}</b></div>
+      </div>
       <div className="race-rate-columns">
         <SimpleBars
           title="Highest rates"
@@ -258,6 +297,8 @@ export function RaceRatesChart() {
           max={0.4}
           accent="coral"
           showCount
+          selected={selected}
+          onSelect={setSelected}
         />
         <SimpleBars
           title="Lowest rates"
@@ -265,6 +306,8 @@ export function RaceRatesChart() {
           max={0.4}
           accent="mint"
           showCount
+          selected={selected}
+          onSelect={setSelected}
         />
       </div>
     </ChartShell>
@@ -360,6 +403,8 @@ function SimpleBars({
   accent,
   showCount = false,
   raw = false,
+  selected,
+  onSelect,
 }: {
   rows: { label: string; value: number; count?: number }[];
   max: number;
@@ -367,20 +412,38 @@ function SimpleBars({
   accent: "coral" | "lavender" | "mint";
   showCount?: boolean;
   raw?: boolean;
+  selected?: string;
+  onSelect?: (label: string) => void;
 }) {
   return (
     <div className={`simple-bars simple-bars--${accent}`}>
       {title && <h4>{title}</h4>}
-      {rows.map((row) => (
-        <div key={row.label}>
+      {rows.map((row) => {
+        const content = (
+          <>
           <header>
             <span>{row.label}</span>
             <strong>{raw ? row.value : `${(row.value * 100).toFixed(1)}%`}</strong>
           </header>
           <i><b style={{ width: `${Math.min(row.value / max, 1) * 100}%` }} /></i>
           {showCount && <small>{row.count?.toLocaleString("en-US")} laps</small>}
-        </div>
-      ))}
+          </>
+        );
+
+        return onSelect ? (
+          <button
+            type="button"
+            className={selected === row.label ? "is-selected" : ""}
+            onClick={() => onSelect(row.label)}
+            aria-pressed={selected === row.label}
+            key={row.label}
+          >
+            {content}
+          </button>
+        ) : (
+          <div key={row.label}>{content}</div>
+        );
+      })}
     </div>
   );
 }

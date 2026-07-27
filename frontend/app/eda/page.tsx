@@ -11,6 +11,7 @@ import {
   RaceRatesChart,
   TargetDistributionChart,
 } from "./native-eda-charts";
+import { EdaTelemetry } from "./eda-telemetry";
 
 export const metadata: Metadata = {
   title: "Detailed EDA Notebook",
@@ -98,6 +99,8 @@ export default function EdaPage() {
           ))}
         </div>
       </nav>
+
+      <EdaTelemetry />
 
       <NotebookSection
         id="target"

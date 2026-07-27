@@ -62,6 +62,10 @@ test("server-renders the EDA and model lab routes", async () => {
   assert.match(eda, /Observed pit windows/);
   assert.match(eda, /LightGBM feature importance/);
   assert.match(eda, /Exact notebook data/);
+  assert.match(eda, /LIVE ANALYSIS/);
+  assert.match(eda, /Telemetry focus/);
+  assert.match(eda, /SELECTED CIRCUIT/);
+  assert.match(eda, /ACTIVE CHANNEL/);
   assert.doesNotMatch(eda, /\/eda\/\d{2}-[^"]+\.png/);
   assert.match(eda, /0\.89754/);
   assert.match(model, /Best Model Demo/);

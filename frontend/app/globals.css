@@ -3431,3 +3431,661 @@ a {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* EDA race telemetry treatment */
+.notebook-page {
+  position: relative;
+  isolation: isolate;
+  background-color: #f2f1ec;
+  background-image:
+    linear-gradient(
+      112deg,
+      transparent 0 17%,
+      rgba(16, 33, 63, 0.025) 17% 17.4%,
+      transparent 17.4% 73%,
+      rgba(241, 90, 84, 0.035) 73% 73.5%,
+      transparent 73.5%
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(16, 33, 63, 0.018) 0,
+      rgba(16, 33, 63, 0.018) 1px,
+      transparent 1px,
+      transparent 80px
+    );
+}
+
+.notebook-page::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 92% 10%, rgba(241, 90, 84, 0.13), transparent 20%),
+    radial-gradient(circle at 10% 48%, rgba(123, 113, 186, 0.09), transparent 25%);
+}
+
+.notebook-page .topbar {
+  margin-top: 8px;
+  padding: 10px 14px;
+  border: 1px solid rgba(16, 33, 63, 0.14);
+  border-radius: 12px;
+  background: rgba(255, 253, 248, 0.76);
+  backdrop-filter: blur(12px);
+}
+
+.notebook-hero {
+  position: relative;
+  min-height: 470px;
+  margin-top: 16px;
+  padding-inline: clamp(28px, 5vw, 66px);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 30px;
+  background:
+    linear-gradient(105deg, rgba(9, 18, 35, 0.98) 0 63%, rgba(9, 18, 35, 0.72)),
+    var(--navy);
+  box-shadow: 0 32px 70px rgba(8, 19, 37, 0.24);
+}
+
+.notebook-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto auto;
+  width: 38%;
+  height: 100%;
+  opacity: 0.15;
+  background:
+    linear-gradient(135deg, transparent 0 44%, var(--coral) 44% 49%, transparent 49%),
+    repeating-conic-gradient(
+      rgba(255, 255, 255, 0.82) 0 25%,
+      transparent 0 50%
+    ) 100% 0 / 32px 32px;
+  mask-image: linear-gradient(to left, #000, transparent);
+}
+
+.notebook-hero::after {
+  content: "DATA / STRATEGY / TELEMETRY /";
+  position: absolute;
+  right: -34px;
+  bottom: 22px;
+  color: rgba(255, 255, 255, 0.08);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: clamp(22px, 3.5vw, 48px);
+  font-weight: 900;
+  letter-spacing: 0.07em;
+  white-space: nowrap;
+  transform: skewX(-12deg);
+}
+
+.notebook-hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+.notebook-hero h1,
+.notebook-hero__quote blockquote {
+  color: #fff;
+}
+
+.notebook-hero .section-kicker {
+  color: #ff6e68;
+}
+
+.notebook-hero > div > p:last-child,
+.notebook-hero__quote p {
+  color: rgba(255, 255, 255, 0.61);
+}
+
+.notebook-hero__quote {
+  border-left-color: #ff6e68;
+}
+
+.dataset-ledger {
+  position: relative;
+  z-index: 1;
+  margin: -18px 24px 0;
+  border: 1px solid rgba(16, 33, 63, 0.13);
+  border-radius: 17px;
+  background: rgba(255, 253, 248, 0.94);
+  box-shadow: 0 17px 38px rgba(16, 33, 63, 0.1);
+}
+
+.dataset-ledger > div {
+  position: relative;
+}
+
+.dataset-ledger > div::after {
+  content: "";
+  position: absolute;
+  right: 14px;
+  bottom: 12px;
+  width: 22px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--coral);
+  transform: skewX(-22deg);
+}
+
+.notebook-toc {
+  border-color: rgba(16, 33, 63, 0.2);
+  background: rgba(11, 23, 43, 0.94);
+}
+
+.notebook-toc > span,
+.notebook-toc a {
+  color: rgba(255, 255, 255, 0.59);
+}
+
+.notebook-toc a:hover,
+.notebook-toc a:focus-visible {
+  background: var(--coral);
+}
+
+.notebook-toc small {
+  color: #ff7974;
+}
+
+.notebook-section {
+  position: relative;
+}
+
+.notebook-section::before {
+  content: "";
+  position: absolute;
+  top: clamp(54px, 7vw, 100px);
+  right: 0;
+  left: 78px;
+  height: 3px;
+  border-radius: 999px;
+  background:
+    linear-gradient(
+      90deg,
+      var(--coral) 0 72px,
+      rgba(16, 33, 63, 0.15) 72px 100%
+    );
+  transform: skewX(-24deg);
+}
+
+.notebook-section__header > span {
+  border: 0;
+  background: var(--navy);
+  color: #fff;
+  box-shadow:
+    inset -5px 0 0 var(--coral),
+    0 8px 18px rgba(16, 33, 63, 0.15);
+  transform: skewX(-7deg);
+}
+
+.notebook-section__header h2 {
+  max-width: 980px;
+}
+
+.native-chart {
+  border-color: rgba(16, 33, 63, 0.2);
+  background:
+    linear-gradient(rgba(255, 253, 248, 0.96), rgba(255, 253, 248, 0.96)),
+    repeating-conic-gradient(
+      rgba(16, 33, 63, 0.08) 0 25%,
+      transparent 0 50%
+    ) 0 0 / 24px 24px;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+
+.native-chart:hover {
+  border-color: rgba(241, 90, 84, 0.45);
+  box-shadow: 0 28px 62px rgba(16, 33, 63, 0.14);
+  transform: translateY(-2px);
+}
+
+.native-chart__header {
+  position: relative;
+  overflow: hidden;
+  background: var(--navy);
+  color: #fff;
+}
+
+.native-chart__header::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 120px;
+  opacity: 0.08;
+  background: repeating-conic-gradient(#fff 0 25%, transparent 0 50%) 0 0 / 18px
+    18px;
+  transform: skewX(-18deg);
+}
+
+.native-chart__header > * {
+  position: relative;
+  z-index: 1;
+}
+
+.native-chart__header > small {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.native-chart__canvas {
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(16, 33, 63, 0.025) 0,
+      transparent 45px
+    );
+}
+
+.profile-focus,
+.race-selection {
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  display: grid;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid rgba(16, 33, 63, 0.12);
+  border-radius: 14px;
+  background:
+    linear-gradient(100deg, rgba(16, 33, 63, 0.98), rgba(24, 46, 79, 0.96));
+  color: #fff;
+  box-shadow: inset 4px 0 0 var(--coral);
+}
+
+.profile-focus {
+  grid-template-columns: minmax(150px, 0.45fr) 1fr;
+}
+
+.profile-focus > div > span,
+.race-selection > div:first-child > span {
+  color: #ff7974;
+  font-size: 7px;
+  font-weight: 850;
+  letter-spacing: 0.11em;
+}
+
+.profile-focus > div > strong,
+.race-selection > div:first-child > strong {
+  margin-top: 3px;
+  display: block;
+  font-size: 17px;
+}
+
+.profile-focus dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.profile-focus dl div,
+.race-selection > div:not(:first-child) {
+  padding: 8px 10px;
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.profile-focus dt,
+.race-selection small {
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 7px;
+  text-transform: uppercase;
+}
+
+.profile-focus dd {
+  margin: 3px 0 0;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.profile-card {
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 150ms ease,
+    background 150ms ease,
+    transform 150ms ease;
+}
+
+.profile-card:hover,
+.profile-card:focus-visible,
+.profile-card.is-selected {
+  border-color: var(--coral);
+  background: #fff;
+  outline: 0;
+  transform: translateY(-2px);
+}
+
+.profile-card.is-selected {
+  box-shadow: inset 0 -3px 0 var(--coral);
+}
+
+.race-selection {
+  grid-template-columns: minmax(190px, 1fr) repeat(3, auto);
+}
+
+.race-selection b {
+  margin-top: 2px;
+  display: block;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 11px;
+}
+
+.simple-bars > button {
+  padding: 7px 8px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 140ms ease,
+    transform 140ms ease;
+}
+
+.simple-bars > button:hover,
+.simple-bars > button:focus-visible,
+.simple-bars > button.is-selected {
+  background: rgba(241, 90, 84, 0.09);
+  outline: 0;
+  transform: translateX(3px);
+}
+
+.simple-bars > button.is-selected {
+  box-shadow: inset 3px 0 0 var(--coral);
+}
+
+.simple-bars > :is(div, button) > i {
+  height: 7px;
+  margin-top: 5px;
+  display: block;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(16, 33, 63, 0.07);
+}
+
+.simple-bars > :is(div, button) > i > b {
+  height: 100%;
+  display: block;
+  border-radius: inherit;
+}
+
+.simple-bars--coral > :is(div, button) > i > b {
+  background: linear-gradient(90deg, var(--coral), #f6a499);
+}
+
+.simple-bars--lavender > :is(div, button) > i > b {
+  background: linear-gradient(90deg, var(--lavender), #bdb5e4);
+}
+
+.simple-bars--mint > :is(div, button) > i > b {
+  background: linear-gradient(90deg, #3f9a87, #93d8c8);
+}
+
+.simple-bars > :is(div, button) > small {
+  margin-top: 3px;
+  display: block;
+  color: rgba(16, 33, 63, 0.38);
+  font-size: 7px;
+}
+
+.eda-telemetry {
+  position: fixed;
+  z-index: 12;
+  top: 50%;
+  right: 17px;
+  width: 88px;
+  padding: 11px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 17px;
+  background: rgba(9, 19, 36, 0.94);
+  color: #fff;
+  box-shadow: 0 18px 42px rgba(8, 17, 32, 0.25);
+  backdrop-filter: blur(14px);
+  transform: translateY(-50%);
+}
+
+.eda-telemetry > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.eda-telemetry > header span {
+  font-size: 6px;
+  font-weight: 850;
+  letter-spacing: 0.09em;
+}
+
+.eda-telemetry > header i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #63e6be;
+  box-shadow: 0 0 0 4px rgba(99, 230, 190, 0.1);
+  animation: telemetry-pulse 1.7s ease-in-out infinite;
+}
+
+.eda-telemetry__current {
+  margin-top: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.eda-telemetry__current small {
+  color: #ff7974;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 7px;
+}
+
+.eda-telemetry__current strong {
+  margin-top: 2px;
+  display: block;
+  overflow: hidden;
+  font-size: 10px;
+  text-overflow: ellipsis;
+}
+
+.eda-telemetry__progress {
+  position: absolute;
+  top: 100px;
+  bottom: 119px;
+  left: 17px;
+  width: 2px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.eda-telemetry__progress i {
+  display: block;
+  width: 100%;
+  border-radius: inherit;
+  background: linear-gradient(to bottom, var(--coral), #ffb14a);
+  transition: height 250ms ease;
+}
+
+.eda-telemetry__dots {
+  margin: 12px 0 12px 14px;
+  display: grid;
+  gap: 3px;
+}
+
+.eda-telemetry__dots button {
+  height: 17px;
+  padding: 0 4px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.36);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 6px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.eda-telemetry__dots button:hover,
+.eda-telemetry__dots button:focus-visible,
+.eda-telemetry__dots button.is-active {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  outline: 0;
+}
+
+.eda-telemetry__dots button.is-active {
+  box-shadow: inset 2px 0 0 var(--coral);
+}
+
+.eda-telemetry__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+
+.eda-telemetry__actions button {
+  height: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  cursor: pointer;
+}
+
+.eda-telemetry__actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.25;
+}
+
+.eda-telemetry__focus {
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px 7px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 5px;
+  border: 0;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 6px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.eda-telemetry__focus i {
+  width: 17px;
+  height: 9px;
+  padding: 2px;
+  display: block;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.17);
+}
+
+.eda-telemetry__focus i::after {
+  content: "";
+  width: 5px;
+  height: 5px;
+  display: block;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 150ms ease;
+}
+
+.eda-telemetry__focus.is-active {
+  color: #fff;
+}
+
+.eda-telemetry__focus.is-active i {
+  background: var(--coral);
+}
+
+.eda-telemetry__focus.is-active i::after {
+  transform: translateX(8px);
+}
+
+.eda-focus-mode .notebook-section__header > div > p:last-child,
+.eda-focus-mode .notebook-callout,
+.eda-focus-mode .notebook-insight-grid,
+.eda-focus-mode .timing-findings,
+.eda-focus-mode .notebook-footnote,
+.eda-focus-mode .compound-ledger,
+.eda-focus-mode .correlation-ledger,
+.eda-focus-mode .degradation-sequence,
+.eda-focus-mode .race-extremes {
+  display: none;
+}
+
+.eda-focus-mode .notebook-section {
+  padding-top: 86px;
+}
+
+.eda-focus-mode .notebook-section__body {
+  margin-top: 24px;
+}
+
+@keyframes telemetry-pulse {
+  50% {
+    opacity: 0.45;
+    transform: scale(0.78);
+  }
+}
+
+@media (max-width: 1200px) {
+  .eda-telemetry {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .notebook-hero {
+    min-height: auto;
+    margin-inline: -4px;
+    padding: 52px 24px 40px;
+    border-radius: 23px;
+  }
+
+  .notebook-hero::before {
+    width: 70%;
+  }
+
+  .dataset-ledger {
+    margin-inline: 10px;
+  }
+
+  .notebook-section::before {
+    left: 0;
+  }
+
+  .profile-focus,
+  .race-selection {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-focus dl {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .profile-focus dl div,
+  .race-selection > div:not(:first-child) {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-left: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .profile-focus dl {
+    grid-template-columns: 1fr;
+  }
+
+  .race-selection {
+    gap: 4px;
+  }
+}
