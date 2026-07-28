@@ -44,3 +44,6 @@ Thumbs.db
 Desktop.ini
 .idea/
 .vscode/
+
+# Locally packaged model artifact bundles
+backend/artifacts/*.zip

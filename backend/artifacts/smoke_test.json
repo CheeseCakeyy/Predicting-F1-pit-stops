@@ -1,0 +1,24 @@
+{
+  "artifact_version": 1,
+  "input": {
+    "Driver": "D086",
+    "Compound": "HARD",
+    "Race": "Dutch Grand Prix",
+    "PitStop": 1.0,
+    "LapNumber": 27.0,
+    "Stint": 2.0,
+    "TyreLife": 7.0,
+    "Position": 4.0,
+    "LapTime (s)": 75.095,
+    "LapTime_Delta": -32.617000000000004,
+    "Cumulative_Degradation": -223.207,
+    "RaceProgress": 0.3461538461538461,
+    "Position_Change": -3.0
+  },
+  "expected": {
+    "pit_next_lap_probability": 0.7222286291543925,
+    "decision_threshold": 0.5,
+    "pit_next_lap": true
+  },
+  "absolute_tolerance": 1e-10
+}
