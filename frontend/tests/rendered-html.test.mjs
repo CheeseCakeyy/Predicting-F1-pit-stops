@@ -76,12 +76,12 @@ test("server-renders the EDA and model lab routes", async () => {
   assert.match(eda, /ACTIVE CHANNEL/);
   assert.doesNotMatch(eda, /\/eda\/\d{2}-[^"]+\.png/);
   assert.match(eda, /0\.89754/);
-  assert.match(model, /Best Model Demo/);
+  assert.match(model, /Baseline Model Demo/);
   assert.match(model, /Ask the pit wall/);
-  assert.match(model, /Frontend simulation/);
+  assert.match(model, /Trained model API/);
   assert.match(model, /Common pit window/);
-  assert.match(model, /Run illustrative prediction/);
-  assert.match(model, /WHY THIS RESULT/);
+  assert.match(model, /Run model prediction/);
+  assert.match(model, /INPUT CONTEXT/);
 });
 
 test("keeps product styling and metadata free of starter references", async () => {
@@ -116,9 +116,12 @@ test("keeps product styling and metadata free of starter references", async () =
   assert.match(telemetry, /String\(active\)\.padStart\(2, "0"\)/);
   assert.match(telemetry, /String\(index\)\.padStart\(2, "0"\)/);
   assert.match(telemetry, /sections\.length - 1/);
-  assert.match(modelLab, /calculateIllustrativePrediction/);
-  assert.match(modelLab, /2023 triggers the dataset anomaly warning/);
-  assert.match(modelLab, /not the trained model API/);
+  assert.match(modelLab, /NEXT_PUBLIC_API_BASE_URL/);
+  assert.match(modelLab, /\/api\/v1\/predict/);
+  assert.match(modelLab, /cumulative_degradation/);
+  assert.match(modelLab, /position_change/);
+  assert.match(modelLab, /production LightGBM artifact/);
+  assert.doesNotMatch(modelLab, /calculateIllustrativePrediction/);
   assert.match(modelLab, /setTyreBoost\(\(value\) => value \+ 1\)/);
   assert.match(spinningTyre, /setTimeout\(\(\) => setBoosting\(false\), 1500\)/);
   assert.match(spinningTyre, /spinning-tyre__rotor/);

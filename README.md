@@ -25,6 +25,15 @@ Predicting-F1-pit-stops/
 |   |-- pitstop_pred_xgb_groupkfold_oof.ipynb
 |   |-- realmlp_stkf_fe.ipynb
 |   `-- xgb_stratified_fe.ipynb
+|-- backend/
+|   |-- app/
+|   |-- artifacts/
+|   |-- tests/
+|   `-- requirements.txt
+|-- frontend/
+|   |-- app/
+|   |-- public/
+|   `-- package.json
 |-- Submissions/
 |   |-- submission-baseline-lgbm-0.93576.csv
 |   |-- submission_xgb_oof_groupkfolds - 0.94834.csv
@@ -114,6 +123,37 @@ Promising feature areas from the EDA:
 4. Run the EDA notebook first to understand the data.
 5. Run experiments from the `Experiments/` directory.
 6. Save generated predictions in `Submissions/`.
+
+## Prediction application
+
+The interactive application uses two independently deployable services:
+
+- The Vinext frontend in `frontend/`.
+- The FastAPI prediction service in `backend/`.
+
+The backend exposes `GET /health` and `POST /api/v1/predict`. It verifies the
+native LightGBM model, metadata checksum, feature contract, and exported smoke
+test during startup. The model is loaded once and inference is limited to one
+CPU thread.
+
+Run the backend from `backend/`:
+
+```bash
+python -m venv .venv
+pip install -r requirements-dev.txt
+python -m app
+```
+
+Run the frontend from `frontend/`:
+
+```bash
+npm install
+npm run dev
+```
+
+Set `NEXT_PUBLIC_API_BASE_URL=http://localhost:8000` for local frontend
+integration. In deployment, replace it with the public HTTPS origin of the
+FastAPI service.
 
 ## Dependencies
 

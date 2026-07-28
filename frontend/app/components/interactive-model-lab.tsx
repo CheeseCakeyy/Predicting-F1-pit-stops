@@ -1,197 +1,234 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { SpinningTyre } from "./spinning-tyre";
 
 type LapState = {
   driver: string;
   race: string;
-  year: number;
-  lap: number;
-  totalLaps: number;
   compound: string;
-  tyreLife: number;
+  pitStop: number;
+  lapNumber: number;
   stint: number;
+  tyreLife: number;
   position: number;
-  lapDelta: number;
-  raceProgress: number;
+  lapTimeSeconds: number;
+  lapTimeDelta: number;
+  cumulativeDegradation: number;
+  raceProgressPercent: number;
+  positionChange: number;
 };
+
+type PredictionResult = {
+  pit_next_lap: boolean;
+  probability: number;
+  threshold: number;
+  model_name: string;
+  artifact_version: number;
+};
+
+const API_BASE_URL = (
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000"
+).replace(/\/$/, "");
+
+const drivers = ["VER", "NOR", "LEC", "ALO", "HAM", "RUS"];
+const races = [
+  "Monaco Grand Prix",
+  "Chinese Grand Prix",
+  "Spanish Grand Prix",
+  "British Grand Prix",
+  "Italian Grand Prix",
+  "Miami Grand Prix",
+  "Mexico City Grand Prix",
+];
 
 const presets: Record<string, LapState> = {
   pitWindow: {
     driver: "VER",
-    race: "Monaco GP",
-    year: 2025,
-    lap: 31,
-    totalLaps: 78,
+    race: "Monaco Grand Prix",
     compound: "HARD",
-    tyreLife: 18,
+    pitStop: 0,
+    lapNumber: 31,
     stint: 2,
+    tyreLife: 18,
     position: 3,
-    lapDelta: 0.84,
-    raceProgress: 39.7,
+    lapTimeSeconds: 75.095,
+    lapTimeDelta: 0.84,
+    cumulativeDegradation: -12.4,
+    raceProgressPercent: 39.7,
+    positionChange: 0,
   },
   freshTyres: {
     driver: "NOR",
-    race: "British GP",
-    year: 2025,
-    lap: 12,
-    totalLaps: 52,
+    race: "British Grand Prix",
     compound: "MEDIUM",
-    tyreLife: 4,
+    pitStop: 0,
+    lapNumber: 12,
     stint: 1,
+    tyreLife: 4,
     position: 4,
-    lapDelta: -0.42,
-    raceProgress: 23.1,
+    lapTimeSeconds: 89.42,
+    lapTimeDelta: -0.42,
+    cumulativeDegradation: -2.1,
+    raceProgressPercent: 23.1,
+    positionChange: 1,
   },
   lateRace: {
     driver: "LEC",
-    race: "Chinese GP",
-    year: 2024,
-    lap: 48,
-    totalLaps: 56,
+    race: "Chinese Grand Prix",
     compound: "SOFT",
-    tyreLife: 22,
+    pitStop: 0,
+    lapNumber: 48,
     stint: 3,
+    tyreLife: 22,
     position: 5,
-    lapDelta: 1.18,
-    raceProgress: 85.7,
+    lapTimeSeconds: 98.31,
+    lapTimeDelta: 1.18,
+    cumulativeDegradation: 8.9,
+    raceProgressPercent: 85.7,
+    positionChange: -1,
   },
-  anomaly: {
+  currentStop: {
     driver: "ALO",
-    race: "Spanish GP",
-    year: 2023,
-    lap: 29,
-    totalLaps: 66,
+    race: "Spanish Grand Prix",
     compound: "HARD",
-    tyreLife: 17,
+    pitStop: 1,
+    lapNumber: 29,
     stint: 2,
+    tyreLife: 17,
     position: 7,
-    lapDelta: 0.71,
-    raceProgress: 43.9,
+    lapTimeSeconds: 92.64,
+    lapTimeDelta: 0.71,
+    cumulativeDegradation: -18.7,
+    raceProgressPercent: 43.9,
+    positionChange: -3,
   },
 };
 
-function calculateIllustrativePrediction(state: LapState) {
-  let score = 0.08;
-  const reasons: string[] = [];
-
-  if (state.tyreLife >= 10 && state.tyreLife <= 20) {
-    score += 0.34;
-    reasons.push("Tyre age sits inside the common 10-20 lap pit window.");
-  } else if (state.tyreLife > 20) {
-    score += Math.min(0.42, 0.24 + (state.tyreLife - 20) * 0.015);
-    reasons.push("Older tyres increase the illustrative stop pressure.");
-  } else {
-    score += Math.max(0, state.tyreLife - 4) * 0.018;
-    reasons.push("Fresh tyre age lowers immediate stop pressure.");
-  }
-
-  if (state.raceProgress >= 28 && state.raceProgress <= 70) {
-    score += 0.13;
-    reasons.push("Race progress is inside the dataset's busy strategy phase.");
-  } else if (state.raceProgress > 78) {
-    score -= 0.05;
-    reasons.push("Late-race stops are less frequent in the observed data.");
-  }
-
-  if (state.stint >= 2) {
-    score += Math.min(0.12, state.stint * 0.035);
-    reasons.push("Higher stint context raises the estimated probability.");
-  }
-
-  if (state.lapDelta > 0.4) {
-    score += Math.min(0.12, state.lapDelta * 0.07);
-    reasons.push("A positive lap-time delta adds supporting pressure.");
-  }
-
-  const compoundAdjustment: Record<string, number> = {
-    HARD: 0.07,
-    SOFT: 0.04,
-    INTERMEDIATE: 0.02,
-    MEDIUM: -0.01,
-    WET: -0.05,
-  };
-  score += compoundAdjustment[state.compound] ?? 0;
-
-  const raceAdjustment: Record<string, number> = {
-    "Chinese GP": 0.08,
-    "Monaco GP": 0.06,
-    "Spanish GP": 0.04,
-    "Italian GP": -0.03,
-    "Miami GP": -0.04,
-    "Mexico City GP": -0.05,
-  };
-  score += raceAdjustment[state.race] ?? 0;
-
-  if (state.year === 2023) {
-    score *= 0.16;
-    reasons.unshift("2023 triggers the dataset anomaly warning.");
-  }
-
-  const probability = Math.round(Math.min(0.94, Math.max(0.03, score)) * 100);
-  return {
-    probability,
-    decision: probability >= 50 ? "PIT NEXT LAP" : "STAY OUT",
-    call: probability >= 65 ? "BOX THIS LAP" : probability >= 50 ? "PREPARE THE CREW" : "STAY OUT",
-    confidence: probability >= 70 || probability <= 25 ? "High" : "Moderate",
-    reasons: reasons.slice(0, 3),
-  };
+function inputContext(state: LapState) {
+  return [
+    `${state.tyreLife}-lap ${state.compound.toLowerCase()} tyre stint.`,
+    `Lap ${state.lapNumber} at ${state.raceProgressPercent.toFixed(1)}% race progress.`,
+    `${state.lapTimeDelta >= 0 ? "+" : ""}${state.lapTimeDelta.toFixed(2)}s lap delta with ${state.positionChange >= 0 ? "+" : ""}${state.positionChange} position change.`,
+  ];
 }
 
 export function InteractiveModelLab() {
   const [activePreset, setActivePreset] = useState("pitWindow");
   const [draft, setDraft] = useState<LapState>(presets.pitWindow);
   const [submitted, setSubmitted] = useState<LapState>(presets.pitWindow);
+  const [result, setResult] = useState<PredictionResult | null>(null);
+  const [requestState, setRequestState] = useState<
+    "idle" | "loading" | "error"
+  >("idle");
+  const [error, setError] = useState("");
   const [tyreBoost, setTyreBoost] = useState(0);
-  const result = useMemo(
-    () => calculateIllustrativePrediction(submitted),
-    [submitted],
-  );
 
   const update = <Key extends keyof LapState>(key: Key, value: LapState[Key]) => {
     setDraft((current) => ({ ...current, [key]: value }));
   };
 
   const loadPreset = (name: string) => {
-    const next = presets[name];
     setActivePreset(name);
-    setDraft(next);
-    setSubmitted(next);
+    setDraft(presets[name]);
+    setResult(null);
+    setRequestState("idle");
+    setError("");
   };
+
+  const runPrediction = async () => {
+    setRequestState("loading");
+    setError("");
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/v1/predict`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          driver: draft.driver,
+          compound: draft.compound,
+          race: draft.race,
+          pit_stop: draft.pitStop,
+          lap_number: draft.lapNumber,
+          stint: draft.stint,
+          tyre_life: draft.tyreLife,
+          position: draft.position,
+          lap_time_seconds: draft.lapTimeSeconds,
+          lap_time_delta: draft.lapTimeDelta,
+          cumulative_degradation: draft.cumulativeDegradation,
+          race_progress: draft.raceProgressPercent / 100,
+          position_change: draft.positionChange,
+        }),
+      });
+
+      if (!response.ok) {
+        const body = (await response.json().catch(() => null)) as {
+          detail?: string;
+        } | null;
+        throw new Error(body?.detail ?? `Prediction failed (${response.status})`);
+      }
+
+      const prediction = (await response.json()) as PredictionResult;
+      setResult(prediction);
+      setSubmitted(draft);
+      setRequestState("idle");
+      setTyreBoost((value) => value + 1);
+    } catch (requestError) {
+      setResult(null);
+      setRequestState("error");
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "The prediction service could not be reached.",
+      );
+    }
+  };
+
+  const probability = Math.round((result?.probability ?? 0) * 100);
+  const decision = result
+    ? result.pit_next_lap
+      ? "PIT NEXT LAP"
+      : "STAY OUT"
+    : "READY";
+  const recommendation = result
+    ? result.pit_next_lap
+      ? "PREPARE THE CREW"
+      : "KEEP PUSHING"
+    : "RUN A SCENARIO";
 
   return (
     <main className="page page--model-lab">
       <header className="topbar">
         <div className="eyebrow">
           <span className="status-dot" />
-          LIGHTGBM + REALMLP BLEND
+          LIGHTGBM BASELINE
         </div>
-        <div className="topbar__meta">0.95328 Public AUC</div>
+        <div className="topbar__meta">0.89754 validation AUC</div>
       </header>
 
       <section className="page-heading page-heading--compact">
-        <p className="section-kicker">BEST MODEL DEMO</p>
+        <p className="section-kicker">LIVE MODEL DEMO</p>
         <h1>Ask the pit wall.</h1>
         <p>
-          Adjust the current lap state and explore an illustrative next-lap
-          decision.
+          Send a complete lap state to the deployed baseline model and receive
+          its next-lap pit probability.
         </p>
       </section>
 
-      <div className="demo-disclaimer" role="note">
-        <strong>Frontend simulation</strong>
+      <div className="demo-disclaimer demo-disclaimer--live" role="note">
+        <strong>Trained model API</strong>
         <span>
-          This uses transparent heuristic scoring, not the trained model API.
+          Predictions come from the production LightGBM artifact, not frontend
+          heuristic scoring.
         </span>
       </div>
 
-      <div className="preset-tabs" aria-label="Demo scenarios">
+      <div className="preset-tabs" aria-label="Prediction scenarios">
         {[
           ["pitWindow", "Common pit window"],
           ["freshTyres", "Fresh tyres"],
           ["lateRace", "Late race"],
-          ["anomaly", "2023 anomaly"],
+          ["currentStop", "Current stop"],
         ].map(([value, label]) => (
           <button
             className={activePreset === value ? "is-active" : ""}
@@ -209,8 +246,7 @@ export function InteractiveModelLab() {
           className="panel lap-state-card lap-state-form"
           onSubmit={(event) => {
             event.preventDefault();
-            setSubmitted(draft);
-            setTyreBoost((value) => value + 1);
+            void runPrediction();
           }}
         >
           <div className="panel-heading">
@@ -218,7 +254,7 @@ export function InteractiveModelLab() {
               <p className="section-kicker">CURRENT LAP STATE</p>
               <h2>Edit the scenario</h2>
             </div>
-            <span className="badge badge--soft">Illustrative</span>
+            <span className="badge badge--soft">13 features</span>
           </div>
 
           <div className="form-grid">
@@ -227,7 +263,7 @@ export function InteractiveModelLab() {
                 value={draft.driver}
                 onChange={(event) => update("driver", event.target.value)}
               >
-                {["VER", "NOR", "LEC", "ALO", "HAM", "RUS"].map((driver) => (
+                {drivers.map((driver) => (
                   <option key={driver}>{driver}</option>
                 ))}
               </select>
@@ -238,27 +274,8 @@ export function InteractiveModelLab() {
                 value={draft.race}
                 onChange={(event) => update("race", event.target.value)}
               >
-                {[
-                  "Monaco GP",
-                  "Chinese GP",
-                  "Spanish GP",
-                  "British GP",
-                  "Italian GP",
-                  "Miami GP",
-                  "Mexico City GP",
-                ].map((race) => (
+                {races.map((race) => (
                   <option key={race}>{race}</option>
-                ))}
-              </select>
-            </Field>
-
-            <Field label="Year">
-              <select
-                value={draft.year}
-                onChange={(event) => update("year", Number(event.target.value))}
-              >
-                {[2022, 2023, 2024, 2025].map((year) => (
-                  <option key={year}>{year}</option>
                 ))}
               </select>
             </Field>
@@ -276,34 +293,39 @@ export function InteractiveModelLab() {
               </select>
             </Field>
 
+            <Field label="Pit stop on current lap">
+              <select
+                value={draft.pitStop}
+                onChange={(event) =>
+                  update("pitStop", Number(event.target.value))
+                }
+              >
+                <option value={0}>No</option>
+                <option value={1}>Yes</option>
+              </select>
+            </Field>
+
             <NumberField
-              label="Lap"
-              value={draft.lap}
+              label="Lap number"
+              value={draft.lapNumber}
               min={1}
-              max={draft.totalLaps}
-              onChange={(value) => update("lap", value)}
-            />
-            <NumberField
-              label="Total laps"
-              value={draft.totalLaps}
-              min={20}
-              max={90}
-              onChange={(value) => update("totalLaps", value)}
-            />
-            <NumberField
-              label="Tyre life"
-              value={draft.tyreLife}
-              min={0}
-              max={55}
-              suffix="laps"
-              onChange={(value) => update("tyreLife", value)}
+              max={78}
+              onChange={(value) => update("lapNumber", value)}
             />
             <NumberField
               label="Stint"
               value={draft.stint}
               min={1}
-              max={5}
+              max={8}
               onChange={(value) => update("stint", value)}
+            />
+            <NumberField
+              label="Tyre life"
+              value={draft.tyreLife}
+              min={1}
+              max={77}
+              suffix="laps"
+              onChange={(value) => update("tyreLife", value)}
             />
             <NumberField
               label="Position"
@@ -314,62 +336,100 @@ export function InteractiveModelLab() {
               onChange={(value) => update("position", value)}
             />
             <NumberField
-              label="Lap-time delta"
-              value={draft.lapDelta}
-              min={-3}
-              max={5}
-              step={0.01}
+              label="Lap time"
+              value={draft.lapTimeSeconds}
+              min={67.694}
+              max={2507.607}
+              step={0.001}
               suffix="s"
-              onChange={(value) => update("lapDelta", value)}
+              onChange={(value) => update("lapTimeSeconds", value)}
+            />
+            <NumberField
+              label="Lap-time delta"
+              value={draft.lapTimeDelta}
+              min={-2403.895}
+              max={2423.932}
+              step={0.001}
+              suffix="s"
+              onChange={(value) => update("lapTimeDelta", value)}
+            />
+            <NumberField
+              label="Cumulative degradation"
+              value={draft.cumulativeDegradation}
+              min={-274.564}
+              max={2412.026}
+              step={0.001}
+              suffix="s"
+              onChange={(value) => update("cumulativeDegradation", value)}
+            />
+            <NumberField
+              label="Position change"
+              value={draft.positionChange}
+              min={-18}
+              max={18}
+              onChange={(value) => update("positionChange", value)}
             />
           </div>
 
           <label className="range-field">
             <span>
               Race progress
-              <strong>{draft.raceProgress.toFixed(1)}%</strong>
+              <strong>{draft.raceProgressPercent.toFixed(1)}%</strong>
             </span>
             <input
               type="range"
-              min="1"
+              min="1.3"
               max="100"
               step="0.1"
-              value={draft.raceProgress}
+              value={draft.raceProgressPercent}
               onChange={(event) =>
-                update("raceProgress", Number(event.target.value))
+                update("raceProgressPercent", Number(event.target.value))
               }
             />
           </label>
 
-          <button className="primary-button primary-button--active" type="submit">
-            Run illustrative prediction
+          {requestState === "error" && (
+            <p className="prediction-error" role="alert">
+              {error}
+            </p>
+          )}
+
+          <button
+            className="primary-button primary-button--active"
+            type="submit"
+            disabled={requestState === "loading"}
+          >
+            {requestState === "loading"
+              ? "Running model…"
+              : "Run model prediction"}
             <span>→</span>
           </button>
         </form>
 
         <article
-          className={`panel result-shell result-shell--${result.probability >= 50 ? "pit" : "stay"}`}
+          className={`panel result-shell result-shell--${result?.pit_next_lap ? "pit" : "stay"}`}
           aria-live="polite"
+          aria-busy={requestState === "loading"}
         >
           <div className="result-shell__content">
             <p className="section-kicker">PREDICTION RESULT</p>
-            <h2>{result.decision}</h2>
+            <h2>{decision}</h2>
             <div
               className="probability-ring"
               style={{
-                background: `radial-gradient(circle, var(--paper) 0 58%, transparent 59%), conic-gradient(var(--coral) 0 ${result.probability}%, rgba(16, 33, 63, 0.1) ${result.probability}% 100%)`,
+                background: `radial-gradient(circle, var(--paper) 0 58%, transparent 59%), conic-gradient(var(--coral) 0 ${probability}%, rgba(16, 33, 63, 0.1) ${probability}% 100%)`,
               }}
             >
-              <strong>{result.probability}%</strong>
-              <span>{result.confidence} confidence</span>
+              <strong>{result ? `${probability}%` : "—"}</strong>
+              <span>model probability</span>
             </div>
             <div className="recommendation">
               <span>Recommended call</span>
-              <strong>{result.call}</strong>
+              <strong>{recommendation}</strong>
             </div>
           </div>
           <SpinningTyre
-            label={result.probability >= 50 ? "PIT" : "OUT"}
+            label={result?.pit_next_lap ? "PIT" : "OUT"}
             variant="result"
             boostKey={tyreBoost}
           />
@@ -378,27 +438,26 @@ export function InteractiveModelLab() {
 
       <section className="lab-footer-grid lab-footer-grid--interactive">
         <article className="panel contribution-card">
-          <p className="section-kicker">MODEL CONTRIBUTION</p>
-          <Contribution label="LightGBM" value="42.5%" width="42.5%" />
-          <Contribution label="RealMLP" value="57.5%" width="57.5%" />
-          <small>Weights from the best saved OOF blend.</small>
+          <p className="section-kicker">DEPLOYED MODEL</p>
+          <Contribution label="LightGBM baseline" value="100%" width="100%" />
+          <small>Selected for the constrained CPU and memory budget.</small>
         </article>
         <article className="panel explanation-card">
-          <p className="section-kicker">WHY THIS RESULT?</p>
+          <p className="section-kicker">INPUT CONTEXT</p>
           <div className="reason-list">
-            {result.reasons.map((reason, index) => (
-              <div key={reason}>
+            {inputContext(submitted).map((context, index) => (
+              <div key={context}>
                 <span>{String(index + 1).padStart(2, "0")}</span>
-                <p>{reason}</p>
+                <p>{context}</p>
               </div>
             ))}
           </div>
         </article>
         <article className="panel model-score-card">
-          <p className="section-kicker">BEST SAVED SUBMISSION</p>
-          <strong>0.95328</strong>
-          <span>Public ROC AUC</span>
-          <small>Blend performance, not this frontend simulation.</small>
+          <p className="section-kicker">VALIDATION SCORE</p>
+          <strong>0.89754</strong>
+          <span>Time-aware ROC AUC</span>
+          <small>2025 holdout score for the deployed baseline.</small>
         </article>
       </section>
     </main>
