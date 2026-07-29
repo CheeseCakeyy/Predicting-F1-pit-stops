@@ -96,8 +96,10 @@ actions tied to the current ChatGPT user. Leave public content anonymous.
 ## Vercel Deployment
 
 Import the repository in Vercel with `frontend` as the Root Directory. The
-checked-in `vercel.json` selects Next.js and the Vercel-specific build without
-changing the existing Vinext workflow.
+checked-in `vercel.json` deploys the fully static Next.js export from `out/`
+without changing the existing Vinext workflow. Vercel's framework integration
+is intentionally disabled to avoid its subdirectory Next.js finalization path.
+The export is enabled only when Vercel's build environment flag is present.
 
 Set `NEXT_PUBLIC_API_BASE_URL` to the deployed Render API origin, without a
 trailing slash. Because this is a public build-time variable, redeploy the
