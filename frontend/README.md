@@ -89,8 +89,19 @@ actions tied to the current ChatGPT user. Leave public content anonymous.
 
 - `npm run dev`: start local development
 - `npm run build`: verify the vinext build output
+- `npm run vercel-build`: verify the Vercel-compatible Next.js build
 - `npm test`: build the starter and verify its rendered loading skeleton
 - `npm run db:generate`: generate Drizzle migrations after schema changes
+
+## Vercel Deployment
+
+Import the repository in Vercel with `frontend` as the Root Directory. The
+checked-in `vercel.json` selects Next.js and the Vercel-specific build without
+changing the existing Vinext workflow.
+
+Set `NEXT_PUBLIC_API_BASE_URL` to the deployed Render API origin, without a
+trailing slash. Because this is a public build-time variable, redeploy the
+frontend after adding or changing it.
 
 ## Learn More
 
