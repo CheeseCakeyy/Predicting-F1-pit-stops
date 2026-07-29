@@ -38,6 +38,24 @@ test("server-renders the PitWall overview shell", async () => {
   assert.match(html, /439,140/);
   assert.match(html, /LightGBM \+ RealMLP/);
   assert.match(html, /0\.95328/);
+  assert.match(html, /EXPERIMENT SCORECARD/);
+  assert.match(html, /COMPETITION METRIC/);
+  assert.match(html, /ROC AUC/);
+  assert.match(html, /Higher is better/);
+  assert.match(html, /Score progression/);
+  assert.match(html, /Line chart comparing validation or OOF/);
+  assert.match(html, /private leaderboard is the primary score/i);
+  assert.match(html, /Best score .* deployed model/);
+  assert.match(html, /available backend memory and compute budget/);
+  assert.match(html, /clear deployment choice[\s\S]*two-model blend/);
+  assert.match(
+    html,
+    /<th scope="col">Public<\/th><th scope="col">Private<\/th>/,
+  );
+  assert.match(html, /LGBM without early stopping/);
+  assert.match(html, /submission_xgb_oof_groupkfolds - 0\.94834\.csv/);
+  assert.match(html, /0\.953876/);
+  assert.match(html, /0\.93249/);
   assert.match(html, /PIT: accelerate tyre rotation/);
   assert.match(html, /Click to accelerate/);
   assert.match(html, /href="\/eda"/);

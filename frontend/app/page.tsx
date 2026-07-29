@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ExperimentScoreChart } from "./components/experiment-score-chart";
 import { SpinningTyre } from "./components/spinning-tyre";
 
 const proof = [
@@ -31,6 +32,94 @@ const valueCards = [
     tone: "lavender",
   },
 ];
+
+type Experiment = {
+  name: string;
+  shortName: string;
+  file: string;
+  oof: number | null;
+  privateScore: number;
+  publicScore: number;
+  notes: string;
+};
+
+const experiments: Experiment[] = [
+  {
+    name: "LGBM + RealMLP blend",
+    shortName: "Blend",
+    file: "submission_blend_lgbm_realmlp - lb - 0.95328.csv",
+    oof: 0.953876,
+    privateScore: 0.95369,
+    publicScore: 0.95328,
+    notes:
+      "Best saved submission; OOF blend used 42.5% LGBM and 57.5% RealMLP.",
+  },
+  {
+    name: "RealMLP with feature engineering",
+    shortName: "RealMLP FE",
+    file: "submission_realmlp_fe - lb-0.95259.csv",
+    oof: 0.953105,
+    privateScore: 0.95315,
+    publicScore: 0.95259,
+    notes: "6-fold StratifiedKFold OOF; mean fold AUC 0.953109.",
+  },
+  {
+    name: "LGBM with feature engineering",
+    shortName: "LGBM FE",
+    file: "submission_lgbm_fe.csv",
+    oof: 0.952511,
+    privateScore: 0.95256,
+    publicScore: 0.95237,
+    notes: "OOF score loaded in the blend notebook.",
+  },
+  {
+    name: "XGBoost with feature engineering",
+    shortName: "XGB FE",
+    file: "submission_xgb_stratified_fe - lb 0.95032.csv",
+    oof: 0.950752,
+    privateScore: 0.95068,
+    publicScore: 0.95032,
+    notes: "5-fold StratifiedKFold OOF; mean fold AUC 0.950761.",
+  },
+  {
+    name: "XGBoost OOF GroupKFold",
+    shortName: "XGB Group",
+    file: "submission_xgb_oof_groupkfolds - 0.94834.csv",
+    oof: 0.92978,
+    privateScore: 0.94878,
+    publicScore: 0.94834,
+    notes: "5-fold GroupKFold by race; mean fold AUC 0.929450.",
+  },
+  {
+    name: "Baseline EDA LightGBM notebook",
+    shortName: "EDA LGBM",
+    file: "submission-baseline-lgbm-0.93576.csv",
+    oof: 0.89754,
+    privateScore: 0.93609,
+    publicScore: 0.93576,
+    notes: "Year-holdout validation using 2025 as validation.",
+  },
+  {
+    name: "Baseline LGBM submission",
+    shortName: "Baseline",
+    file: "submission.csv",
+    oof: 0.8955,
+    privateScore: 0.93609,
+    publicScore: 0.93576,
+    notes: "Baseline predictions; experiment notebook year-holdout validation.",
+  },
+  {
+    name: "LGBM without early stopping",
+    shortName: "No ES",
+    file: "submission (1).csv",
+    oof: null,
+    privateScore: 0.93265,
+    publicScore: 0.93249,
+    notes: "No validation score found in the checked notebooks.",
+  },
+];
+
+const experimentProgression = [...experiments].reverse();
 
 export default function Home() {
   return (
@@ -171,6 +260,98 @@ export default function Home() {
               <b>57.5%</b>
               <i><em style={{ width: "57.5%" }} /></i>
             </div>
+          </div>
+        </div>
+
+        <article className="landing-deployment-note">
+          <div>
+            <span>DEPLOYMENT DECISION</span>
+            <strong>Best score ≠ deployed model</strong>
+          </div>
+          <p>
+            The production API serves the baseline LightGBM rather than the
+            higher-scoring LightGBM + RealMLP blend. Loading and running both
+            models would exceed the available backend memory and compute
+            budget, putting the server process at risk of a crash. Without
+            those infrastructure constraints, the clear deployment choice
+            would be the two-model blend.
+          </p>
+        </article>
+      </section>
+
+      <section className="landing-experiments" id="experiments">
+        <header className="landing-section-heading landing-experiments__heading">
+          <div>
+            <p className="section-kicker">EXPERIMENT SCORECARD</p>
+            <h2>Every run moved the strategy forward.</h2>
+            <div className="landing-metric-note">
+              <span>COMPETITION METRIC</span>
+              <strong>ROC AUC</strong>
+              <small>Higher is better</small>
+            </div>
+          </div>
+          <p>
+            Eight saved experiments show how stronger validation, feature
+            engineering and model diversity lifted the leaderboard result.
+          </p>
+        </header>
+
+        <div className="experiment-chart-card">
+          <div className="experiment-chart-card__header">
+            <div>
+              <h3>Score progression</h3>
+              <p>Ordered from the earliest saved run to the winning blend.</p>
+            </div>
+            <div className="experiment-legend" aria-label="Chart legend">
+              <span><i className="is-oof" />OOF / validation</span>
+              <span><i className="is-public" />Public</span>
+              <span><i className="is-private" />Private</span>
+            </div>
+          </div>
+
+          <div
+            className="experiment-chart-scroll"
+          >
+            <ExperimentScoreChart experiments={experimentProgression} />
+          </div>
+          <p className="experiment-chart-card__note">
+            Lines use a focused 0.89–0.96 axis. The private leaderboard is the
+            primary score and receives the strongest visual emphasis.
+          </p>
+        </div>
+
+        <div className="experiment-table-card">
+          <div className="experiment-table-scroll">
+            <table className="experiment-table">
+              <caption className="sr-only">
+                Complete experiment and submission score comparison
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">Experiment / Submission</th>
+                  <th scope="col">Related file</th>
+                  <th scope="col">Validation / OOF</th>
+                  <th scope="col">Public</th>
+                  <th scope="col">Private</th>
+                  <th scope="col">Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                {experiments.map((experiment, index) => (
+                  <tr className={index === 0 ? "is-best" : ""} key={experiment.name}>
+                    <th scope="row">
+                      {index === 0 && <span>BEST</span>}
+                      {experiment.name}
+                    </th>
+                    <td><code>{experiment.file}</code></td>
+                    <td>{experiment.oof?.toFixed(6) ?? "N/A"}</td>
+                    <td><strong>{experiment.publicScore.toFixed(5)}</strong></td>
+                    <td><strong>{experiment.privateScore.toFixed(5)}</strong></td>
+                    <td>{experiment.notes}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </section>
