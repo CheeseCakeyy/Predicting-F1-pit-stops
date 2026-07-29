@@ -23,8 +23,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="app-shell">
       <aside className="side-nav">
-        <Link className="brand-mark" href="/" aria-label="PitWall AI home">
-          <span>P</span>
+        <Link className="brand-mark" href="/" aria-label="Box Box Box home">
+          <span>B</span>
         </Link>
 
         <nav className="primary-nav" aria-label="Primary navigation">

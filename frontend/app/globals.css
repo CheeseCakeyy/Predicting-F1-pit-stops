@@ -4457,7 +4457,7 @@ a {
 }
 
 .landing-hero::after {
-  content: "PITWALL / STRATEGY / NEXT LAP";
+  content: "BOX BOX BOX / STRATEGY / NEXT LAP";
   position: absolute;
   z-index: 0;
   right: -25px;

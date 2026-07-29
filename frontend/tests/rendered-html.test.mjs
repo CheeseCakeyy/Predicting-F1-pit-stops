@@ -23,13 +23,14 @@ async function render(path = "/") {
   );
 }
 
-test("server-renders the PitWall overview shell", async () => {
+test("server-renders the Box Box Box overview shell", async () => {
   const response = await render("/");
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
-  assert.match(html, /<title>PitWall AI<\/title>/i);
+  assert.match(html, /<title>Box Box Box<\/title>/i);
+  assert.match(html, /BOX BOX BOX/);
   assert.match(html, /Predict the next/);
   assert.match(html, /Before the radio call/);
   assert.match(html, /Try the model demo/);
@@ -116,7 +117,7 @@ test("keeps product styling and metadata free of starter references", async () =
     readFile(new URL("../app/components/spinning-tyre.tsx", import.meta.url), "utf8"),
   ]);
 
-  assert.match(layout, /PitWall AI/);
+  assert.match(layout, /Box Box Box/);
   assert.match(layout, /<AppShell>\{children\}<\/AppShell>/);
   assert.match(styles, /--navy:\s*#10213f/i);
   assert.match(styles, /@media \(max-width:\s*760px\)/);

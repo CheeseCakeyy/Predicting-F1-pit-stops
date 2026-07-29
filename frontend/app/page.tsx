@@ -127,7 +127,7 @@ export default function Home() {
       <header className="topbar landing-topbar">
         <div className="eyebrow">
           <span className="status-dot" />
-          PITWALL AI · S6E5
+          BOX BOX BOX · S6E5
         </div>
         <div className="landing-topbar__links">
           <a href="#approach">How it works</a>

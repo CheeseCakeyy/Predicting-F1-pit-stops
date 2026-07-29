@@ -22,8 +22,8 @@ const libreBaskerville = Libre_Baskerville({
 
 export const metadata: Metadata = {
   title: {
-    default: "PitWall AI",
-    template: "%s · PitWall AI",
+    default: "Box Box Box",
+    template: "%s · Box Box Box",
   },
   description:
     "Lap-level strategy intelligence for predicting Formula 1 pit stops.",
