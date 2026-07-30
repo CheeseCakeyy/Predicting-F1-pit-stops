@@ -1987,7 +1987,7 @@ a {
 }
 
 .notebook-fact--coral {
-  background: var(--coral-soft);
+  background: #f6aaa3;
 }
 
 .notebook-fact--yellow {
@@ -5122,8 +5122,8 @@ a {
   z-index: 12;
   top: 50%;
   right: 17px;
-  width: 88px;
-  padding: 11px;
+  width: 104px;
+  padding: 12px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.13);
   border-radius: 17px;
@@ -5141,9 +5141,9 @@ a {
 }
 
 .eda-telemetry > header span {
-  font-size: 6px;
+  font-size: 7px;
   font-weight: 850;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.07em;
 }
 
 .eda-telemetry > header i {
@@ -5162,16 +5162,18 @@ a {
 }
 
 .eda-telemetry__current small {
-  color: #ff7974;
+  color: #ff8d88;
   font-family: var(--font-geist-mono), monospace;
-  font-size: 7px;
+  font-size: 8px;
+  font-weight: 700;
 }
 
 .eda-telemetry__current strong {
-  margin-top: 2px;
+  margin-top: 4px;
   display: block;
   overflow: hidden;
-  font-size: 10px;
+  font-size: 12px;
+  line-height: 1.2;
   text-overflow: ellipsis;
 }
 
@@ -5201,14 +5203,15 @@ a {
 }
 
 .eda-telemetry__dots button {
-  height: 17px;
+  height: 18px;
   padding: 0 4px;
   border: 0;
   border-radius: 5px;
   background: transparent;
-  color: rgba(255, 255, 255, 0.36);
+  color: rgba(255, 255, 255, 0.68);
   font-family: var(--font-geist-mono), monospace;
-  font-size: 6px;
+  font-size: 7px;
+  font-weight: 650;
   text-align: left;
   cursor: pointer;
 }
@@ -5256,8 +5259,10 @@ a {
   border: 0;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.62);
-  font-size: 6px;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 7px;
+  font-weight: 650;
+  line-height: 1.3;
   text-align: left;
   cursor: pointer;
 }
@@ -5505,13 +5510,13 @@ a {
 .experiment-line-chart__changes {
   margin: 8px 20px 0 36px;
   display: grid;
-  grid-template-columns: repeat(8, minmax(95px, 1fr));
+  grid-template-columns: repeat(8, minmax(108px, 1fr));
   gap: 9px;
 }
 
 .experiment-line-chart__changes article {
   min-width: 0;
-  padding: 9px 7px;
+  padding: 12px 9px;
   border: 1px solid rgba(16, 33, 63, 0.08);
   border-radius: 9px;
   background: rgba(16, 33, 63, 0.025);
@@ -5525,22 +5530,24 @@ a {
 
 .experiment-line-chart__changes strong {
   display: block;
-  font-size: 8px;
-  line-height: 1.25;
+  color: var(--navy);
+  font-size: 10px;
+  line-height: 1.3;
 }
 
 .experiment-line-chart__changes article > div {
-  margin-top: 6px;
+  margin-top: 8px;
   display: grid;
-  gap: 2px;
+  gap: 3px;
 }
 
 .experiment-line-chart__changes span,
 .experiment-line-chart__changes small {
-  color: rgba(16, 33, 63, 0.48);
+  color: rgba(16, 33, 63, 0.68);
   font-family: var(--font-geist-mono), monospace;
-  font-size: 6px;
-  line-height: 1.35;
+  font-size: 8px;
+  font-weight: 600;
+  line-height: 1.4;
 }
 
 .experiment-line-chart__changes .is-private {
@@ -5558,11 +5565,12 @@ a {
 
 .experiment-chart-card__note {
   margin: 0;
-  padding: 11px 24px;
+  padding: 13px 24px;
   border-top: 1px solid rgba(16, 33, 63, 0.09);
-  color: rgba(16, 33, 63, 0.43);
-  font-size: 8px;
-  line-height: 1.5;
+  color: rgba(16, 33, 63, 0.64);
+  font-size: 10px;
+  font-weight: 550;
+  line-height: 1.55;
 }
 
 .experiment-table-card {
